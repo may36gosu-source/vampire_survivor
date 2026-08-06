@@ -38,10 +38,6 @@ public class PlayerController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
-        // Debug.Log(playerData.maxHP);
-        // Debug.Log(playerData.attack);
-        // Debug.Log(playerData.moveSpeed);
-
         moveSpeed = playerData.moveSpeed; 
 
         currentHP = playerData.maxHP;
