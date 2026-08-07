@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
 
     
 
-    private CharacterController controller;
+    // private CharacterController controller;
     private Animator animator;
 
     private Vector3 moveDirection;
@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
 
     private int currentLevel = 1;
 
+    private int currentAttack = 1;
+
     private int currentExp = 0;
 
     private int expToNextLevel = 100;
@@ -35,12 +37,20 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        controller = GetComponent<CharacterController>();
+        // controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+
+        LocalPlayer.Register(this);
 
         moveSpeed = playerData.moveSpeed; 
 
         currentHP = playerData.maxHP;
+
+        currentAttack = playerData.attack;
+
+        GameEvents.OnExpCollected += AddExp; // đăng ký sự kiện nhận exp
+        
+        GameEvents.OnLevelUp += LevelUp; // đăng ký sự kiện nhận level up
     }
 
     private void Update()
@@ -53,7 +63,9 @@ public class PlayerController : MonoBehaviour
             moveDirection.Normalize();
         }
 
-        controller.Move( moveDirection * moveSpeed * Time.deltaTime);
+        // controller.Move( moveDirection * moveSpeed * Time.deltaTime);
+
+        Move(moveDirection);
 
         animator.SetFloat("Speed", moveDirection.magnitude); // set để đổi trạng thái idle => walk
 
@@ -62,4 +74,57 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(moveDirection); // xoay mặt cho đúng khi joystick
         }
     }
+
+    private void Move(Vector3 direction)
+    {
+        Vector3 delta = direction * moveSpeed * Time.deltaTime;
+
+        transform.position += delta;
+    }
+
+
+    private void AddExp(int exp)
+    {
+        currentExp += exp;
+
+        Debug.Log($"EXP : {currentExp}");
+
+        CheckLevelUp();
+    }
+
+    private void CheckLevelUp()
+    {
+        while(currentExp >= expToNextLevel)
+        {
+            currentExp -= expToNextLevel;
+
+            currentLevel++;
+
+            currentAttack += 5;
+
+            expToNextLevel += 50;
+
+            GameEvents.LevelUp(currentLevel);
+        }
+    }
+
+    private void LevelUp(int level)
+    {
+       
+
+        Debug.Log($"LEVEL UP======================== : {level}");
+
+    }
+
+
+
+    private void OnDestroy()
+    {
+        LocalPlayer.Unregister(this);
+        GameEvents.OnExpCollected -= AddExp;
+    }
+
+
+
+
 }

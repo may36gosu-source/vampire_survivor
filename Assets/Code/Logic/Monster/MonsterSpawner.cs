@@ -8,7 +8,10 @@ public class MonsterSpawner : MonoBehaviour
 
     [Header("Spawn")]
     [SerializeField] private Transform spawnRoot;
-    [SerializeField] private float spawnRadius = 3f;
+    [SerializeField] private float spawnRadius = 5f;
+
+    [Header("Drop")]
+    [SerializeField] private ExpData expData;
 
     private int currentAlive;
 
@@ -18,10 +21,14 @@ public class MonsterSpawner : MonoBehaviour
 
     private ObjectPool monsterPool; // sử dụng pool
 
+    private ObjectPool expPool;
+
     private void Start()
     {
         
         monsterPool = new ObjectPool( waveData.monsterData.prefab, waveData.spawnCount, transform);
+
+        expPool = new ObjectPool(expData.prefab, expData.preloadCount, transform);
 
         SpawnWave();
     }
@@ -64,6 +71,8 @@ public class MonsterSpawner : MonoBehaviour
 
         controller.Initialize(waveData.monsterData);
 
+        // controller.OnSpawn();
+
         controller.OnDead += HandleMonsterDead;
 
         currentAlive++;
@@ -79,6 +88,8 @@ public class MonsterSpawner : MonoBehaviour
         currentAlive--;
 
         SpawnExp(monster.transform.position);
+
+        // monster.OnDespawn();
 
         monsterPool.Release(monster.gameObject); // đưa về pool
 
@@ -129,6 +140,24 @@ public class MonsterSpawner : MonoBehaviour
     /// </summary>
     private void SpawnExp(Vector3 position)
     {
-        Debug.Log($"Spawn EXP : {position}");
+        // Debug.Log($"Spawn EXP : {position}");
+
+
+        GameObject exp = expPool.Get();
+
+        exp.transform.position = position;
+
+        ExpController controller = exp.GetComponent<ExpController>();
+
+        if (controller == null)
+        {
+            controller = exp.AddComponent<ExpController>();
+        }
+
+
+        controller.Initialize(waveData.monsterData.expReward);
+
+        controller.SetPool(expPool);
+
     }
 }

@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71c947de889946e4f9d4b3f2ef6ad51f, type: 3}
-  m_Name: WaveMonster_Default
+  m_Script: {fileID: 11500000, guid: 795eb4138c35b3f40bcf8a16c86af22f, type: 3}
+  m_Name: Exp_Default
   m_EditorClassIdentifier: 
-  monsterData: {fileID: 11400000, guid: ad51f147550dca449996fdca2fb6a2d3, type: 2}
-  spawnCount: 5
-  spawnInterval: 2
+  prefab: {fileID: 1285072362522786914, guid: 1d07072020e820440b2530a3ce4366fe, type: 3}
+  preloadCount: 10
+  collectRadius: 2
+  moveSpeed: 12

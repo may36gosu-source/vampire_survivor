@@ -1,9 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections;
-public class MonsterController : MonoBehaviour
+public class MonsterController : MonoBehaviour, IPoolable
 {
-    private CharacterController characterController;
+    // private CharacterController characterController;
     private Animator animator;
     private Transform player;
 
@@ -24,20 +24,46 @@ public class MonsterController : MonoBehaviour
         currentHP = monsterData.maxHP;
 
 
-        //======================= set data cùng state khi dùng pool
-        
+       
+    }
+
+    public void OnSpawn()
+    {
+        currentHP = monsterData.maxHP;
+
         isDead = false;
 
-        characterController.enabled = true;
+        enabled = true;
+
+        // characterController.enabled = true;
 
         if (capsuleCollider != null)
             capsuleCollider.enabled = true;
 
-        animator.ResetTrigger("Die");
+        // Rebind reset:
 
-        animator.Play("Idle", 0, 0f);
+        // Trigger
+        // Bool
+        // Float
+        // Layer Weight
+        // State
+
+        // gần như đưa Animator về trạng thái vừa mới Instantiate.    
+
+        animator.Rebind();
+        animator.Update(0f); // ép Animator cập nhật ngay trong frame hiện tại.
 
         animator.SetFloat("Speed", 0f);
+    }
+
+    public void OnDespawn()
+    {
+        enabled = false;
+
+        // characterController.enabled = false;
+
+        if (capsuleCollider != null)
+            capsuleCollider.enabled = false;
     }
 
     private void Awake()
@@ -47,23 +73,25 @@ public class MonsterController : MonoBehaviour
 
     private void Start()
     {
-        GameObject playerObject = GameObject.FindWithTag("Player");
+        // GameObject playerObject = GameObject.FindWithTag("Player");
 
-        if (playerObject == null)
-        {
-            Debug.LogError("Không tìm thấy Player trong Scene!");
-            return;
-        }
+        // if (playerObject == null)
+        // {
+        //     Debug.LogError("Không tìm thấy Player trong Scene!");
+        //     return;
+        // }
 
-        player = playerObject.transform;
+        // player = playerObject.transform;
     }
 
     private void Update()
     {
-        if (player == null)
-        return;
+        Transform player = LocalPlayer.Transform;
 
-        // FollowPlayer();
+        if (player == null)
+            return;
+
+        FollowPlayer(player);
     }
 
     public void TakeDamage(int damage)
@@ -97,7 +125,7 @@ public class MonsterController : MonoBehaviour
         animator.SetFloat("Speed", 0f);
         animator.SetTrigger("Die");
 
-        characterController.enabled = false;
+        // characterController.enabled = false;
 
         if (capsuleCollider != null)
             capsuleCollider.enabled = false;
@@ -129,14 +157,8 @@ public class MonsterController : MonoBehaviour
     }
 
 
-    public void OnDeadAnimationFinished()
-    {
-        OnDead?.Invoke(this);
 
-        Destroy(gameObject);
-    }
-
-    private void FollowPlayer()
+    private void FollowPlayer(Transform player)
     {
         Vector3 direction = player.position - transform.position;
         direction.y = 0f;
@@ -157,23 +179,30 @@ public class MonsterController : MonoBehaviour
 
         animator.SetFloat("Speed", 1f);
 
-        characterController.Move(direction * monsterData.moveSpeed * Time.deltaTime);
+        // characterController.Move(direction * monsterData.moveSpeed * Time.deltaTime);
+        Move(direction);
+    }
+
+
+    private void Move(Vector3 direction)
+    {
+        transform.position +=  direction * monsterData.moveSpeed * Time.deltaTime;
     }
 
 
 
     private void PrepareComponents()
     {
-        characterController = GetComponent<CharacterController>();
+        // characterController = GetComponent<CharacterController>();
 
-        if (characterController == null)
-        {
-            characterController = gameObject.AddComponent<CharacterController>();
+        // if (characterController == null)
+        // {
+        //     characterController = gameObject.AddComponent<CharacterController>();
 
-            characterController.height = 1f;
-            characterController.radius = 0.5f;
-            characterController.center = new Vector3(0f, 0.5f, 0f);
-        }
+        //     characterController.height = 1f;
+        //     characterController.radius = 0.5f;
+        //     characterController.center = new Vector3(0f, 0.5f, 0f);
+        // }
 
         capsuleCollider = GetComponent<CapsuleCollider>();
 

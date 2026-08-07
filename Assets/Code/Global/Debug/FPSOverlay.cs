@@ -20,12 +20,14 @@ public class FPSOverlay : MonoBehaviour
 
     private void Start()
     {
-        GameObject playerObject = GameObject.FindWithTag(GameConst.TAG_PLAYER);
+        // GameObject playerObject = GameObject.FindWithTag(GameConst.TAG_PLAYER);
 
-        if (playerObject != null)
-        {
-            player = playerObject.transform;
-        }
+        // if (playerObject != null)
+        // {
+        //     player = playerObject.transform;
+        // }
+
+        player = LocalPlayer.Transform;
     }
 
     private void Update()

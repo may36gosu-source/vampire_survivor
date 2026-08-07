@@ -65,6 +65,10 @@ public class ObjectPool
 
         obj.SetActive(true);
 
+        IPoolable poolable = obj.GetComponent<IPoolable>();
+
+        poolable?.OnSpawn();
+
         return obj;
     }
 
@@ -74,6 +78,10 @@ public class ObjectPool
     /// </summary>
     public void Release(GameObject obj)
     {
+        IPoolable poolable = obj.GetComponent<IPoolable>();
+
+        poolable?.OnDespawn();
+
         obj.SetActive(false);
 
         pool.Enqueue(obj);

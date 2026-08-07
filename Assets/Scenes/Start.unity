@@ -821,31 +821,6 @@ MonoBehaviour:
   joystick: {fileID: 1049622278}
   moveSpeed: 5
   playerData: {fileID: 11400000, guid: 4c0c1deb262cd1d4d937f478dd9a8176, type: 2}
---- !u!143 &994680560
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 994680556}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 1
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!4 &994680562 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6161686391465202174, guid: ed84b15b632f06b45978ed64721ae6c6, type: 3}
@@ -1064,6 +1039,7 @@ MonoBehaviour:
   waveData: {fileID: 11400000, guid: a371be5d15bcf364c84363b015d05fad, type: 2}
   spawnRoot: {fileID: 1097285083}
   spawnRadius: 3
+  expData: {fileID: 11400000, guid: 9717959823626414ca3843af31919d09, type: 2}
 --- !u!4 &1187445729
 Transform:
   m_ObjectHideFlags: 0
@@ -1195,9 +1171,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6830101962358524740, guid: ed84b15b632f06b45978ed64721ae6c6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 994680559}
-    - targetCorrespondingSourceObject: {fileID: 6830101962358524740, guid: ed84b15b632f06b45978ed64721ae6c6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 994680560}
     - targetCorrespondingSourceObject: {fileID: 6830101962358524740, guid: ed84b15b632f06b45978ed64721ae6c6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 994680563}
