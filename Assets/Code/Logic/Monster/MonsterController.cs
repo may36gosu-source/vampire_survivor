@@ -1,17 +1,17 @@
 using UnityEngine;
 using System;
 using System.Collections;
-public class MonsterController : MonoBehaviour, IPoolable
+public class MonsterController : Entity, IPoolable
 {
-    // private CharacterController characterController;
+
     private Animator animator;
     private Transform player;
 
     private MonsterData monsterData;
 
-    private int currentHP;
+    // private int currentHP; -- chuyển qua Entity
 
-    private bool isDead;
+    // private bool isDead;
 
     public event Action<MonsterController> OnDead;
 
@@ -21,10 +21,10 @@ public class MonsterController : MonoBehaviour, IPoolable
     {
         monsterData = data;
 
-        currentHP = monsterData.maxHP;
-
-
-       
+        MaxHP = data.maxHP;
+        currentHP = MaxHP;
+        
+        DisplayName = data.displayName;
     }
 
     public void OnSpawn()
@@ -54,13 +54,13 @@ public class MonsterController : MonoBehaviour, IPoolable
         animator.Update(0f); // ép Animator cập nhật ngay trong frame hiện tại.
 
         animator.SetFloat("Speed", 0f);
+
+
     }
 
     public void OnDespawn()
     {
         enabled = false;
-
-        // characterController.enabled = false;
 
         if (capsuleCollider != null)
             capsuleCollider.enabled = false;
@@ -68,20 +68,13 @@ public class MonsterController : MonoBehaviour, IPoolable
 
     private void Awake()
     {
+        base.Awake(); // tránh bị ghi đè
         PrepareComponents();
     }
 
     private void Start()
     {
-        // GameObject playerObject = GameObject.FindWithTag("Player");
 
-        // if (playerObject == null)
-        // {
-        //     Debug.LogError("Không tìm thấy Player trong Scene!");
-        //     return;
-        // }
-
-        // player = playerObject.transform;
     }
 
     private void Update()
@@ -101,6 +94,8 @@ public class MonsterController : MonoBehaviour, IPoolable
 
         currentHP = Mathf.Max(0, currentHP - damage);
 
+        GameEvents.EntityDamaged(this);
+
         Debug.Log($"Monster HP : {currentHP}");
 
         if (currentHP == 0)
@@ -115,6 +110,8 @@ public class MonsterController : MonoBehaviour, IPoolable
             return;
 
         isDead = true;
+        GameEvents.EntityDead(this);
+
 
         StartCoroutine(DeadRoutine());
     }
@@ -124,8 +121,6 @@ public class MonsterController : MonoBehaviour, IPoolable
     {
         animator.SetFloat("Speed", 0f);
         animator.SetTrigger("Die");
-
-        // characterController.enabled = false;
 
         if (capsuleCollider != null)
             capsuleCollider.enabled = false;
@@ -179,7 +174,6 @@ public class MonsterController : MonoBehaviour, IPoolable
 
         animator.SetFloat("Speed", 1f);
 
-        // characterController.Move(direction * monsterData.moveSpeed * Time.deltaTime);
         Move(direction);
     }
 
@@ -193,16 +187,6 @@ public class MonsterController : MonoBehaviour, IPoolable
 
     private void PrepareComponents()
     {
-        // characterController = GetComponent<CharacterController>();
-
-        // if (characterController == null)
-        // {
-        //     characterController = gameObject.AddComponent<CharacterController>();
-
-        //     characterController.height = 1f;
-        //     characterController.radius = 0.5f;
-        //     characterController.center = new Vector3(0f, 0.5f, 0f);
-        // }
 
         capsuleCollider = GetComponent<CapsuleCollider>();
 

@@ -32,11 +32,6 @@ public class ExpController : MonoBehaviour, IPoolable
     {
         collecting = false;
 
-        // if (player == null)
-        // {
-        //     player = GameObject.FindWithTag("Player").transform;
-        // }
-
         timer = 0f;
         player = LocalPlayer.Transform;
     }

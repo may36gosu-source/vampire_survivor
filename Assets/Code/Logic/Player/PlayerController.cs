@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Entity
 {
     [SerializeField] private FixedJoystick joystick;
     [SerializeField] private float moveSpeed;
@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
 
 
     // Base ATTR
-    private int currentHP;
+    // private int currentHP;
 
     private int currentLevel = 1;
 
@@ -38,19 +38,26 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         // controller = GetComponent<CharacterController>();
+        base.Awake();
         animator = GetComponent<Animator>();
 
         LocalPlayer.Register(this);
 
         moveSpeed = playerData.moveSpeed; 
 
-        currentHP = playerData.maxHP;
+        
 
         currentAttack = playerData.attack;
 
         GameEvents.OnExpCollected += AddExp; // đăng ký sự kiện nhận exp
         
         GameEvents.OnLevelUp += LevelUp; // đăng ký sự kiện nhận level up
+
+        MaxHP = playerData.maxHP;
+
+        currentHP = MaxHP;
+
+        Debug.Log($"HeadPoint.position======================== : {HeadPoint.position}");
     }
 
     private void Update()

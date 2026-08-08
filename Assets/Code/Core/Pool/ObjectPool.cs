@@ -78,6 +78,12 @@ public class ObjectPool
     /// </summary>
     public void Release(GameObject obj)
     {
+        if (!obj.activeSelf){
+            Debug.LogError($"DOUBLE RELEASE : {obj.name}");
+
+            return;
+        }
+
         IPoolable poolable = obj.GetComponent<IPoolable>();
 
         poolable?.OnDespawn();

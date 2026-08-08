@@ -71,6 +71,8 @@ public class MonsterSpawner : MonoBehaviour
 
         controller.Initialize(waveData.monsterData);
 
+        GameEvents.EntitySpawn(controller);// regiter vào HUD
+
         // controller.OnSpawn();
 
         controller.OnDead += HandleMonsterDead;
@@ -90,6 +92,7 @@ public class MonsterSpawner : MonoBehaviour
         SpawnExp(monster.transform.position);
 
         // monster.OnDespawn();
+
 
         monsterPool.Release(monster.gameObject); // đưa về pool
 
