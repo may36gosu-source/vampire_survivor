@@ -1,5 +1,5 @@
 using System;
-
+using UnityEngine;
 public static class GameEvents
 {
 
@@ -43,6 +43,9 @@ public static class GameEvents
         OnMonsterDamaged?.Invoke(monster);
     }
 
+    // ------------------------
+    // Entity
+    // ------------------------
 
     public static void EntityDamaged(Entity entity)
     {
@@ -55,9 +58,28 @@ public static class GameEvents
     }
 
     public static event Action<Entity> OnEntitySpawn;
-    
+
     public static void EntitySpawn(Entity entity)
     {
         OnEntitySpawn?.Invoke(entity);
+    }
+
+    // ------------------------
+    // Damage
+    // ------------------------
+
+    public static event Action<Vector3, Vector3, int> OnPopupDamage;
+
+    public static void PopupDamage(Vector3 position, Vector3 direction, int damage)
+    {
+        OnPopupDamage?.Invoke(position, direction, damage);
+    }
+
+
+    public static event Action OnGameStarted;
+
+    public static void GameStarted()
+    {
+        OnGameStarted?.Invoke();
     }
 }

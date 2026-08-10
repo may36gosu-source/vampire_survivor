@@ -64,6 +64,12 @@ public class HUDManager : MonoBehaviour
 	        return;
 
 	    entities.Add(entity);
+
+	    // tạo HUD cho player
+	    if (entity is PlayerController)
+	    {
+	        EnsureHUD(entity);
+	    }
 	}
 
 	private void UnregisterEntity(Entity entity)

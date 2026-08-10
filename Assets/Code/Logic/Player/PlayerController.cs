@@ -30,9 +30,19 @@ public class PlayerController : Entity
 
     private int currentAttack = 1;
 
+    // public int CurrentAttack => currentAttack;
+
     private int currentExp = 0;
 
     private int expToNextLevel = 100;
+
+    public int CurrentLevel => currentLevel;
+
+    public int CurrentAttack => currentAttack;
+
+    public int CurrentExp => currentExp;
+
+    public int ExpToNextLevel => expToNextLevel;
 
 
     private void Awake()
@@ -41,7 +51,11 @@ public class PlayerController : Entity
         base.Awake();
         animator = GetComponent<Animator>();
 
+        DisplayName = "Player";
+
         LocalPlayer.Register(this);
+
+        // GameEvents.EntitySpawn(this); // HUD
 
         moveSpeed = playerData.moveSpeed; 
 
@@ -60,8 +74,18 @@ public class PlayerController : Entity
         Debug.Log($"HeadPoint.position======================== : {HeadPoint.position}");
     }
 
+    private void Start()
+    {
+        GameEvents.EntitySpawn(this);
+    }
+
     private void Update()
     {
+        
+
+        if (!GameStateHelper.IsPlaying())
+        return;
+
         // Debug.Log(transform.position);
         moveDirection = new Vector3(joystick.Horizontal, 0f, joystick.Vertical);
 
@@ -122,16 +146,11 @@ public class PlayerController : Entity
         Debug.Log($"LEVEL UP======================== : {level}");
 
     }
-
-
-
     private void OnDestroy()
     {
         LocalPlayer.Unregister(this);
         GameEvents.OnExpCollected -= AddExp;
+        GameEvents.OnLevelUp -= LevelUp;
     }
-
-
-
 
 }

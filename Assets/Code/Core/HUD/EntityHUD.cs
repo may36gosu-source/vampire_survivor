@@ -15,6 +15,12 @@ public class EntityHUD : MonoBehaviour, IPoolable
     private TMPro.TextMeshProUGUI nameText;
 
     [SerializeField]
+    private Color playerNameColor = Color.yellow;
+
+    [SerializeField]
+    private Color entityNameColor = Color.white;
+
+    [SerializeField]
     private RectTransform hpFill;
 
     private float originalHPBarWidth;
@@ -46,6 +52,8 @@ public class EntityHUD : MonoBehaviour, IPoolable
         return;
 
         nameText.text = target.DisplayName;
+
+        nameText.color = target is PlayerController ? playerNameColor : entityNameColor;
     }
 
     public void OnSpawn()

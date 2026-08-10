@@ -6,6 +6,13 @@ public class PlayerAutoAttack : MonoBehaviour
 
     private float attackTimer;
 
+    private PlayerController playerController;
+
+    private void Awake()
+    {
+        playerController = GetComponent<PlayerController>();
+    }
+
     private void Update()
     {
         attackTimer += Time.deltaTime;
@@ -20,7 +27,11 @@ public class PlayerAutoAttack : MonoBehaviour
 
         attackTimer = 0f;
 
-        target.TakeDamage(playerData.attack);
+        // target.TakeDamage(playerData.attack);
+
+        target.TakeDamage(playerController.CurrentAttack);
+
+        Debug.Log($"Attack Monster - Damage: {playerController.CurrentAttack}");
 
         Debug.Log("Attack Monster");
     }

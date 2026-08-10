@@ -28,11 +28,7 @@ public class DamageText : MonoBehaviour, IPoolable
         rectTransform = GetComponent<RectTransform>();
     }
 
-    public void Bind(
-        DamageManager manager,
-        Vector3 position,
-        Vector3 velocity,
-        int damage)
+    public void Bind( DamageManager manager, Vector3 position, Vector3 velocity, int damage)
     {
         this.manager = manager;
 
@@ -87,18 +83,12 @@ public class DamageText : MonoBehaviour, IPoolable
             currentPosition += velocity * Time.deltaTime;
 
             // Giảm vận tốc dần
-            velocity = Vector3.Lerp(
-                velocity,
-                Vector3.zero,
-                5f * Time.deltaTime);
+            velocity = Vector3.Lerp(velocity, Vector3.zero, 5f * Time.deltaTime);
 
             // Fade
             if (timer >= fadeStartTime)
             {
-                float fadeT = Mathf.InverseLerp(
-                    fadeStartTime,
-                    lifeTime,
-                    timer);
+                float fadeT = Mathf.InverseLerp(fadeStartTime, lifeTime, timer);
 
                 color.a = 1f - fadeT;
 
@@ -120,8 +110,7 @@ public class DamageText : MonoBehaviour, IPoolable
         if (mainCamera == null)
             return;
 
-        Vector3 screenPosition =
-            mainCamera.WorldToScreenPoint(currentPosition);
+        Vector3 screenPosition = mainCamera.WorldToScreenPoint(currentPosition);
 
         rectTransform.position = screenPosition;
     }

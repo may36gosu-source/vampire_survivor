@@ -30,6 +30,22 @@ public class MonsterSpawner : MonoBehaviour
 
         expPool = new ObjectPool(expData.prefab, expData.preloadCount, transform);
 
+        // SpawnWave();
+        // GameEvents.OnGameStarted += HandleGameStarted;
+    }
+
+    private void OnEnable()
+    {
+        GameEvents.OnGameStarted += HandleGameStarted;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnGameStarted -= HandleGameStarted;
+    }
+
+    private void HandleGameStarted()
+    {
         SpawnWave();
     }
 

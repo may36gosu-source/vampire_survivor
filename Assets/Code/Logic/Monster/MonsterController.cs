@@ -35,13 +35,10 @@ public class MonsterController : Entity, IPoolable
 
         enabled = true;
 
-        // characterController.enabled = true;
-
         if (capsuleCollider != null)
             capsuleCollider.enabled = true;
 
         // Rebind reset:
-
         // Trigger
         // Bool
         // Float
@@ -81,6 +78,9 @@ public class MonsterController : Entity, IPoolable
     {
         Transform player = LocalPlayer.Transform;
 
+        if (!GameStateHelper.IsPlaying())
+        return;
+
         if (player == null)
             return;
 
@@ -92,9 +92,14 @@ public class MonsterController : Entity, IPoolable
         if (isDead)
             return;
 
+        Vector3 hitPosition = HeadPoint.position;
+        Vector3 hitDirection = Forward;
+
         currentHP = Mathf.Max(0, currentHP - damage);
 
         GameEvents.EntityDamaged(this);
+
+        GameEvents.PopupDamage(hitPosition, hitDirection, damage);
 
         Debug.Log($"Monster HP : {currentHP}");
 
@@ -182,8 +187,6 @@ public class MonsterController : Entity, IPoolable
     {
         transform.position +=  direction * monsterData.moveSpeed * Time.deltaTime;
     }
-
-
 
     private void PrepareComponents()
     {
