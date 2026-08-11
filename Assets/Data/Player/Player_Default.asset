@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15a58ce54ffc40947a90cab0e6db3fc9, type: 3}
   m_Name: Player_Default
   m_EditorClassIdentifier: 
-  maxHP: 100
+  maxHP: 200
   moveSpeed: 5
   attack: 20
   attackRange: 3

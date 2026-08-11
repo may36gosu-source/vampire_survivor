@@ -42,7 +42,9 @@ public class PlayerAutoAttack : MonoBehaviour
 
         foreach (Collider hit in hits)
         {
-            MonsterController monster = hit.GetComponent<MonsterController>();
+            // MonsterController monster = hit.GetComponent<MonsterController>();
+
+            MonsterController monster = hit.GetComponentInParent<MonsterController>();
 
             if (monster != null)
                 return monster;

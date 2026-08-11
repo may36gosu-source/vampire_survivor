@@ -10,7 +10,19 @@ public class MonsterData : ScriptableObject
     [Header("Stats")]
     public int maxHP = 50;
     public int expReward = 10;
+
+    [Header("Movement")]
     public float moveSpeed = 2.5f;
+
+    [Header("Combat")]
     public int attack = 10;
+
     public float detectRange = 8f;
+
+    public float attackRange = 2f;
+
+    public float attackCooldown = 1.5f;
+
+    [Range(0f, 1f)]
+    public float attackHitTime = 0.5f;
 }

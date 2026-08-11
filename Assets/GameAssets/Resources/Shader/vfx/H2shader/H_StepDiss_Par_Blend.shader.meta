@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 8b828bced33076d4ca8cb2946b8500e0
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _MainTex: {instanceID: 0}
+  - _Diss_Tex: {instanceID: 0}
+  - _Mask: {instanceID: 0}
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: common/allshader
+  assetBundleVariant: 

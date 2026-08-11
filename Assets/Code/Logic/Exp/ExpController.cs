@@ -80,6 +80,106 @@ using UnityEngine;
 //     }
 // }
 
+// public class ExpController : MonoBehaviour, IPoolable
+// {
+//     [SerializeField]
+//     private int expValue = 10;
+
+//     [SerializeField]
+//     private float lifeTime = 10f;
+
+//     [SerializeField]
+//     private float collectRange = 2f;
+
+//     [SerializeField]
+//     private float collectSpeed = 12f;
+
+//     [SerializeField]
+//     private float collectDistance = 0.2f;
+
+//     private Rigidbody rb;
+
+//     private ObjectPool pool;
+//     private Transform player;
+
+//     private bool collecting;
+//     private float timer;
+
+//     public int ExpValue => expValue;
+
+//     private void Awake()
+//     {
+//         rb = GetComponent<Rigidbody>();
+//     }
+
+//     public void Initialize(int value)
+//     {
+//         expValue = value;
+//     }
+
+//     public void SetPool(ObjectPool objectPool)
+//     {
+//         pool = objectPool;
+//     }
+
+//     public void OnSpawn()
+//     {
+//         collecting = false;
+//         timer = 0f;
+//         player = LocalPlayer.Transform;
+
+//         // Reset physics state
+//         rb.linearVelocity = Vector3.zero;
+//         rb.angularVelocity = Vector3.zero;
+//     }
+
+//     public void OnDespawn()
+//     {
+//         collecting = false;
+//         player = null;
+
+//         rb.linearVelocity = Vector3.zero;
+//         rb.angularVelocity = Vector3.zero;
+//     }
+
+//     private void Update()
+//     {
+//         if (player == null)
+//             return;
+
+//         timer += Time.deltaTime;
+
+//         if (timer >= lifeTime)
+//         {
+//             pool.Release(gameObject);
+//             return;
+//         }
+
+//         float distance = Vector3.Distance( transform.position, player.position );
+
+//         if (!collecting)
+//         {
+//             if (distance <= collectRange)
+//             {
+//                 collecting = true;
+//             }
+
+//             return;
+//         }
+
+//         transform.position = Vector3.MoveTowards( transform.position, player.position, collectSpeed * Time.deltaTime);
+
+//         if (Vector3.Distance(transform.position, player.position) <= collectDistance)
+//         {
+//             GameEvents.ExpCollected(expValue);
+
+//             pool.Release(gameObject);
+//         }
+//     }
+// }
+
+using UnityEngine;
+
 public class ExpController : MonoBehaviour, IPoolable
 {
     [SerializeField]
@@ -105,11 +205,13 @@ public class ExpController : MonoBehaviour, IPoolable
     private bool collecting;
     private float timer;
 
-    public int ExpValue => expValue;
+    public int ExpValue =>
+        expValue;
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        rb =
+            GetComponent<Rigidbody>();
     }
 
     public void Initialize(int value)
@@ -117,20 +219,36 @@ public class ExpController : MonoBehaviour, IPoolable
         expValue = value;
     }
 
-    public void SetPool(ObjectPool objectPool)
+    public void SetPool(
+        ObjectPool objectPool)
     {
         pool = objectPool;
     }
+
+    //==================================================
+    // Pool
+    //==================================================
 
     public void OnSpawn()
     {
         collecting = false;
         timer = 0f;
-        player = LocalPlayer.Transform;
 
-        // Reset physics state
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        player =
+            LocalPlayer.Transform;
+
+        // Orb không dùng physics để rơi.
+        rb.isKinematic = true;
+        rb.useGravity = false;
+
+        rb.linearVelocity =
+            Vector3.zero;
+
+        rb.angularVelocity =
+            Vector3.zero;
+
+        transform.rotation =
+            Quaternion.identity;
     }
 
     public void OnDespawn()
@@ -138,42 +256,86 @@ public class ExpController : MonoBehaviour, IPoolable
         collecting = false;
         player = null;
 
-        rb.linearVelocity = Vector3.zero;
-        rb.angularVelocity = Vector3.zero;
+        rb.linearVelocity =
+            Vector3.zero;
+
+        rb.angularVelocity =
+            Vector3.zero;
+
+        rb.isKinematic = true;
+        rb.useGravity = false;
     }
+
+    //==================================================
+    // Update
+    //==================================================
 
     private void Update()
     {
         if (player == null)
             return;
 
-        timer += Time.deltaTime;
+        timer +=
+            Time.deltaTime;
 
         if (timer >= lifeTime)
         {
-            pool.Release(gameObject);
+            pool.Release(
+                gameObject
+            );
+
             return;
         }
 
-        float distance = Vector3.Distance( transform.position, player.position );
+        float distance =
+            Vector3.Distance(
+                transform.position,
+                player.position
+            );
+
+        //==================================================
+        // Detect collect
+        //==================================================
 
         if (!collecting)
         {
             if (distance <= collectRange)
             {
                 collecting = true;
+
+                // Rigidbody không còn điều khiển Orb.
+                rb.isKinematic = true;
             }
 
             return;
         }
 
-        transform.position = Vector3.MoveTowards( transform.position, player.position, collectSpeed * Time.deltaTime);
+        //==================================================
+        // Move to Player
+        //==================================================
 
-        if (Vector3.Distance(transform.position, player.position) <= collectDistance)
+        transform.position =
+            Vector3.MoveTowards(
+                transform.position,
+                player.position,
+                collectSpeed *
+                Time.deltaTime
+            );
+
+        if (
+            Vector3.Distance(
+                transform.position,
+                player.position
+            ) <= collectDistance
+        )
         {
-            GameEvents.ExpCollected(expValue);
+            GameEvents.ExpCollected(
+                expValue
+            );
 
-            pool.Release(gameObject);
+            pool.Release(
+                gameObject
+            );
         }
     }
 }

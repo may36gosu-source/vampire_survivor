@@ -15,10 +15,19 @@ public static class GameConst
     public const string LAYER_ENVIRONMENT = "Environment";
 
     
+    // =========================
+    // Animator Parameters
+    // =========================
     public const string ANIM_SPEED = "Speed";
     public const string ANIM_ATTACK = "Attack";
     public const string ANIM_HIT = "Hit";
     public const string ANIM_DEAD = "Dead";
+
+    // =========================
+    // Animator State Tags
+    // =========================
+    public const string ANIM_TAG_ATTACK = "Attack";
+    public const string ANIM_TAG_DEAD = "Death";
 
     // =========================
     //  Spawn monster wave tick

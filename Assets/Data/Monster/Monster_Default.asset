@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a35e30bb3db77243a10cbe2e36c4f3b, type: 3}
   m_Name: Monster_Default
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6830101962358524740, guid: ed84b15b632f06b45978ed64721ae6c6, type: 3}
-  maxHP: 50
+  displayName: Slime
+  prefab: {fileID: 4787734284849576031, guid: b9067838994a4fa489d3d3ea62c8d2af, type: 3}
+  maxHP: 120
   expReward: 10
   moveSpeed: 2.5
   attack: 10
   detectRange: 2
+  attackRange: 2
+  attackCooldown: 0.5
+  attackHitTime: 0.5

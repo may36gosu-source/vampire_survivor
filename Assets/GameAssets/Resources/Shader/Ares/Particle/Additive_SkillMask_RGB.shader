@@ -1,0 +1,25 @@
+﻿Shader "Ares/Particle/Additive_SkillMask_RGB"
+{
+	Properties
+	{
+		_Color ("Main Color", Color) = (1, 1, 1, 1)
+		_ColorMultiplier("Color Multipler",range(0,2)) = 2		
+		_MainTex ("Effect Texture", 2D) = "black" {}
+		_AlphaTex ("Alpha texture(Alpha)", 2D) = "white" {}
+		_MaskTex ("Mask", 2D) = "white" {}		
+		_Alpha ( "Transparent ratio", Range( 0, 1 ) ) = 1
+		_UseClip("UseClip",float) = 0
+		_ClipRect("ClipRect",Vector)= (-50000,-50000,50000,50000)
+		_BloomTex ("BloomTex", 2D) = "(0.5,0.5,0.5,0.5)" {}
+		_BloomFactor("BloomFactor", float) = 0
+		
+	}
+
+	SubShader
+	{
+		Tags { "Queue"="Transparent+50" "IgnoreProjector"="True" "RenderType"="Transparent"  "GonbestBloomType"="BloomMask"}		
+		UsePass "Gonbest/Legacy/ParticleHelper/SKILL&MASK&ALPHATEX"
+	}
+	Fallback "Gonbest/FallBack/FBNothing"
+	
+}

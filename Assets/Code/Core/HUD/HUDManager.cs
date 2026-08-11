@@ -111,6 +111,23 @@ public class HUDManager : MonoBehaviour
 	}
 
 
+	private void LateUpdate()
+	{
+	    UpdateHUDPositions();
+	}
+
+	private void UpdateHUDPositions()
+	{
+	    foreach (EntityHUD hud in entityHUDs.Values)
+	    {
+	        if (hud == null)
+	            continue;
+
+	        hud.UpdatePosition();
+	    }
+	}
+
+
 	private void UpdateVisibleHUD()
 	{
 	    Transform player = LocalPlayer.Transform;
