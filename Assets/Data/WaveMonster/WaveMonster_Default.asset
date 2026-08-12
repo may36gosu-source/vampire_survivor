@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: WaveMonster_Default
   m_EditorClassIdentifier: 
   monsterData: {fileID: 11400000, guid: ad51f147550dca449996fdca2fb6a2d3, type: 2}
-  spawnCount: 1
+  spawnCount: 5
   spawnInterval: 2

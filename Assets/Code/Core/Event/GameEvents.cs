@@ -76,10 +76,24 @@ public static class GameEvents
     }
 
 
+    // ------------------------
+    // GameStarted
+    // ------------------------
     public static event Action OnGameStarted;
 
     public static void GameStarted()
     {
         OnGameStarted?.Invoke();
+    }
+
+
+    // ------------------------
+    // GameOver
+    // ------------------------
+    public static event Action OnGameOver;
+
+    public static void GameOver()
+    {
+        OnGameOver?.Invoke();
     }
 }

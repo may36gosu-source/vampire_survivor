@@ -506,30 +506,6 @@ public class MonsterController : Entity, IPoolable
     // Pool
     //==================================================
 
-    // public void OnSpawn()
-    // {
-    //     isDead = false;
-
-    //     enabled = true;
-
-    //     if (capsuleCollider != null)
-    //         capsuleCollider.enabled = true;
-
-    //     // Reset Animator
-    //     animator.Rebind();
-    //     animator.Update(0f);
-
-    //     animator.SetFloat("Speed", 0f);
-
-    //     // Không dùng monsterData ở đây.
-    //     //
-    //     // Vì ObjectPool.Get() gọi OnSpawn()
-    //     // trước khi MonsterSpawner.Initialize().
-    //     if (monsterData != null)
-    //     {
-    //         currentHP = monsterData.maxHP;
-    //     }
-    // }
 
     public void OnSpawn()
     {
@@ -557,17 +533,7 @@ public class MonsterController : Entity, IPoolable
         }
     }
 
-    // public void OnDespawn()
-    // {
-    //     enabled = false;
-
-    //     if (capsuleCollider != null)
-    //         capsuleCollider.enabled = false;
-
-    //     player = null;
-
-    //     OnDead = null;
-    // }
+   
 
     public void OnDespawn()
     {
@@ -594,18 +560,57 @@ public class MonsterController : Entity, IPoolable
         PrepareComponents();
     }
 
-    // private void Update()
-    // {
-    //     if (!GameStateHelper.IsPlaying())
-    //         return;
+    private void OnEnable()
+    {
+        GameEvents.OnEntityDead += HandleEntityDead;
+    }
 
-    //     player = LocalPlayer.Transform;
+    private void OnDisable()
+    {
+        GameEvents.OnEntityDead -= HandleEntityDead;
+    }
 
-    //     if (player == null)
-    //         return;
+    private void HandleEntityDead(Entity entity)
+    {
+        if (entity is not PlayerController target)
+        return;
 
-    //     FollowPlayer(player);
-    // }
+        if (player == null)
+            return;
+
+        float distance = Vector3.Distance(transform.position, target.transform.position);
+
+        // Chỉ Monster đang nằm trong snapshot/detect range
+        // mới phản ứng.
+        if (distance > monsterData.detectRange)
+            return;
+
+        CancelAttack();
+
+     
+
+        // Đưa Animator về Idle
+        animator.SetFloat(GameConst.ANIM_SPEED, 0f);
+
+        animator.Play(GameConst.ANIM_IDLE, 0, 0f);
+    }
+
+    private void CancelAttack()
+    {
+        if (attackRoutine != null)
+        {
+            StopCoroutine(attackRoutine);
+            attackRoutine = null;
+        }
+
+        isAttacking = false;
+
+        attackTimer = 0f;
+
+        animator.ResetTrigger(GameConst.ANIM_ATTACK);
+
+        animator.SetFloat(GameConst.ANIM_SPEED, 0f );
+    }
 
 
 
@@ -617,6 +622,10 @@ public class MonsterController : Entity, IPoolable
         player = LocalPlayer.Transform;
 
         if (player == null)
+            return;
+
+        // Player đã chết → Monster không làm AI nữa
+        if (LocalPlayer.Instance.IsDead)
             return;
 
         UpdateAttackTimer();
@@ -658,7 +667,7 @@ public class MonsterController : Entity, IPoolable
 
         GameEvents.PopupDamage(hitPosition, hitDirection, damage);
 
-        Debug.Log($"Monster HP : {currentHP}");
+        // Debug.Log($"Monster HP : {currentHP}");
 
         if (currentHP == 0)
         {
@@ -670,26 +679,7 @@ public class MonsterController : Entity, IPoolable
     // Death
     //==================================================
 
-    // private void Dead()
-    // {
-    //     if (isDead)
-    //         return;
-
-    //     isDead = true;
-
-    //     //==================================================
-    //     // CHỐT VỊ TRÍ CHẾT
-    //     //==================================================
-
-    //     deathPosition = transform.position;
-
-    //     // Lấy đúng Y của Ground
-    //     deathPosition.y = GetGroundY(deathPosition);
-
-    //     GameEvents.EntityDead(this);
-
-    //     StartCoroutine(DeadRoutine());
-    // }
+   
 
     private void Dead()
     {
@@ -715,38 +705,6 @@ public class MonsterController : Entity, IPoolable
 
         StartCoroutine(DeadRoutine());
     }
-
-    // private IEnumerator DeadRoutine()
-    // {
-    //     animator.SetFloat("Speed", 0f);
-
-    //     animator.SetTrigger("Die");
-
-    //     if (capsuleCollider != null)
-    //         capsuleCollider.enabled = false;
-
-    //     // Dừng AI
-    //     enabled = false;
-
-    //     yield return null;
-
-    //     while (true)
-    //     {
-    //         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-
-    //         if (state.IsName("Dying") &&
-    //             state.normalizedTime >= 1f)
-    //         {
-    //             break;
-    //         }
-
-    //         yield return null;
-    //     }
-
-    //     OnDead?.Invoke(this);
-
-    //     DestroySelf();
-    // }
 
 
     private IEnumerator DeadRoutine()
@@ -787,71 +745,34 @@ public class MonsterController : Entity, IPoolable
 
     private void UpdateMovementAnimation()
     {
-        float animationSpeed =
-            monsterData.moveSpeed >= runSpeedThreshold
-                ? 2f
-                : 1f;
+        float animationSpeed = monsterData.moveSpeed >= runSpeedThreshold ? 2f : 1f;
 
-        animator.SetFloat(
-            GameConst.ANIM_SPEED,
-            animationSpeed
-        );
+        animator.SetFloat(GameConst.ANIM_SPEED, animationSpeed);
 
-        Debug.Log(
-            $"[{name}] CHASE -> Speed = {animationSpeed}"
-        );
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
-         AnimatorStateInfo state =
-        animator.GetCurrentAnimatorStateInfo(0);
 
- 
 
-AnimatorStateInfo nextState =
-    animator.GetNextAnimatorStateInfo(0);
+        // AnimatorStateInfo nextState =
+        // animator.GetNextAnimatorStateInfo(0);
 
-        Debug.Log(
-            $"[{name}] " +
-            $"Speed={animator.GetFloat(GameConst.ANIM_SPEED)} | " +
-            $"Current={state.shortNameHash} | " +
-            $"Idle={state.IsName("Idle")} | " +
-            $"Walk={state.IsName("Monster07_Walk")} | " +
-            $"Run={state.IsName("Monster07_Run")} | " +
-            $"InTransition={animator.IsInTransition(0)} | " +
-            $"Next={nextState.shortNameHash}"
-        );
+        // Debug.Log(
+        //     $"[{name}] " +
+        //     $"Speed={animator.GetFloat(GameConst.ANIM_SPEED)} | " +
+        //     $"Current={state.shortNameHash} | " +
+        //     $"Idle={state.IsName("Idle")} | " +
+        //     $"Walk={state.IsName("Monster07_Walk")} | " +
+        //     $"Run={state.IsName("Monster07_Run")} | " +
+        //     $"InTransition={animator.IsInTransition(0)} | " +
+        //     $"Next={nextState.shortNameHash}"
+        // );
     }
 
     //==================================================
     // AI
     //==================================================
 
-    // private void FollowPlayer(Transform player)
-    // {
-    //     Vector3 direction = player.position - transform.position;
-
-    //     // Monster chỉ di chuyển trên mặt phẳng XZ
-    //     direction.y = 0f;
-
-    //     float distance = direction.magnitude;
-
-    //     // Player đủ gần → đứng
-    //     if (distance <= monsterData.detectRange)
-    //     {
-    //         animator.SetFloat("Speed", 0f);
-
-    //         return;
-    //     }
-
-    //     direction.Normalize();
-
-    //     Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-    //     transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
-
-    //     UpdateMovementAnimation();
-
-    //     Move(direction);
-    // }
+    
 
     private void FollowPlayer(Transform target)
     {
@@ -1036,35 +957,77 @@ AnimatorStateInfo nextState =
         attackRoutine = StartCoroutine(AttackRoutine());
     }
 
+
     private IEnumerator AttackRoutine()
     {
+        
+        // Monster chết
+        if (isDead)
+            yield break;
+
+        // Game không còn Playing
+        if (!GameStateHelper.IsPlaying())
+            yield break;
+
+        // Player không còn hợp lệ
+        if (LocalPlayer.Instance == null)
+            yield break;
+
+        if (LocalPlayer.Instance.IsDead)
+            yield break;
+
         isAttacking = true;
 
         // Cooldown bắt đầu ngay khi Monster ra đòn.
         attackTimer = monsterData.attackCooldown;
 
-        animator.SetFloat( GameConst.ANIM_SPEED, 0f);
+        animator.SetFloat(
+            GameConst.ANIM_SPEED,
+            0f
+        );
 
-        animator.SetTrigger(GameConst.ANIM_ATTACK);
+        animator.SetTrigger(
+            GameConst.ANIM_ATTACK
+        );
 
-        // Cho Animator chuyển sang Attack state.
-        yield return null;
 
         // ========================================
         // WAIT ATTACK STATE
         // ========================================
 
+        yield return null;
+
         while (true)
         {
-            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            if (!GameStateHelper.IsPlaying())
+                yield break;
 
-            if (state.IsTag(GameConst.ANIM_TAG_ATTACK))
+            if (isDead)
+                yield break;
+
+            if (LocalPlayer.Instance == null)
+                yield break;
+
+            if (LocalPlayer.Instance.IsDead)
+                yield break;
+
+
+
+            AnimatorStateInfo state =
+                animator.GetCurrentAnimatorStateInfo(0);
+
+
+            if (state.IsTag(
+                GameConst.ANIM_TAG_ATTACK
+            ))
             {
                 break;
             }
 
+
             yield return null;
         }
+
 
         // ========================================
         // WAIT HIT TIME
@@ -1072,17 +1035,35 @@ AnimatorStateInfo nextState =
 
         while (true)
         {
-            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            if (!GameStateHelper.IsPlaying())
+                yield break;
 
-            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) && state.normalizedTime >= monsterData.attackHitTime)
+            if (isDead)
+                yield break;
+
+            if (LocalPlayer.Instance == null)
+                yield break;
+
+            if (LocalPlayer.Instance.IsDead)
+                yield break;
+
+
+            AnimatorStateInfo state =
+                animator.GetCurrentAnimatorStateInfo(0);
+
+
+            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) &&
+                state.normalizedTime >= monsterData.attackHitTime)
             {
                 PerformAttack();
 
                 break;
             }
 
+
             yield return null;
         }
+
 
         // ========================================
         // WAIT ATTACK END
@@ -1090,25 +1071,39 @@ AnimatorStateInfo nextState =
 
         while (true)
         {
-            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            if (!GameStateHelper.IsPlaying())
+                yield break;
 
-            if ( state.IsTag( GameConst.ANIM_TAG_ATTACK) && state.normalizedTime >= 1f)
+            if (isDead)
+                yield break;
+
+
+            AnimatorStateInfo state =
+                animator.GetCurrentAnimatorStateInfo(0);
+
+
+            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) &&
+                state.normalizedTime >= 1f)
             {
                 break;
             }
 
+
             yield return null;
         }
 
-        isAttacking = false;
 
+        isAttacking = false;
         attackRoutine = null;
     }
+
 
     private void PerformAttack()
     {
         if (isDead)
             return;
+        if (!GameStateHelper.IsPlaying())
+        return;
 
         if (player == null)
             return;

@@ -22,12 +22,14 @@ public static class GameConst
     public const string ANIM_ATTACK = "Attack";
     public const string ANIM_HIT = "Hit";
     public const string ANIM_DEAD = "Dead";
+    public const string ANIM_IDLE = "Idle";
 
     // =========================
     // Animator State Tags
     // =========================
     public const string ANIM_TAG_ATTACK = "Attack";
     public const string ANIM_TAG_DEAD = "Death";
+    public const string ANIM_TAG_IDLE = "Idle";
 
     // =========================
     //  Spawn monster wave tick

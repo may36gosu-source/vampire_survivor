@@ -4,7 +4,8 @@ using UnityEngine;
 public enum GameState
 {
     Ready,
-    Playing
+    Playing,
+    GameOver
 }
 
 public class GameManager : MonoBehaviour
@@ -28,5 +29,15 @@ public class GameManager : MonoBehaviour
         State = GameState.Playing;
 
         GameEvents.GameStarted();
+    }
+
+    public void GameOver()
+    {
+        if (State != GameState.Playing)
+            return;
+
+        State = GameState.GameOver;
+
+        GameEvents.GameOver();
     }
 }

@@ -292,7 +292,7 @@ public class PlayerController : Entity
     {
         currentExp += exp;
 
-        Debug.Log($"EXP : {currentExp}");
+        // Debug.Log($"EXP : {currentExp}");
 
         CheckLevelUp();
     }
@@ -315,7 +315,7 @@ public class PlayerController : Entity
 
     private void LevelUp(int level)
     {
-        Debug.Log( $"LEVEL UP======================== : {level}");
+        // Debug.Log( $"LEVEL UP======================== : {level}");
     }
 
     private void OnDestroy()
@@ -329,13 +329,25 @@ public class PlayerController : Entity
     public void TakeDamage(int damage)
     {
         if (damage <= 0)
+        return;
+
+        if (isDead)
             return;
 
-        currentHP = Mathf.Max( 0, currentHP - damage);
+
+        Vector3 hitPosition = HeadPoint.position;
+
+        Vector3 hitDirection = Forward;
+
+        currentHP = Mathf.Max(0, currentHP - damage);
+
 
         GameEvents.EntityDamaged(this);
 
-        Debug.Log($"Player HP : {currentHP}");
+        // Debug.Log($"Player HP : {currentHP}");
+
+        GameEvents.PopupDamage(hitPosition, hitDirection, damage);
+
 
         if (currentHP <= 0)
         {
@@ -345,42 +357,91 @@ public class PlayerController : Entity
 
     private void Die()
     {
+        if (isDead)
+            return;
+
+        isDead = true;
+
         Debug.Log("PLAYER DEAD");
 
-        // GameEvents.EntityDead(this);
+        StopMovement();
 
-        // StartCoroutine(DeadRoutine() ); 
+        GameEvents.EntityDead(this);
+
+        StartCoroutine( DeadRoutine());
+    }
+
+    private IEnumerator DeadRoutine()
+    {
+        // ========================================
+        // STOP MOVEMENT ANIMATION
+        // ========================================
+
+        animator.SetFloat(GameConst.ANIM_SPEED, 0f);
+
+
+        // ========================================
+        // PLAY DEATH ANIMATION
+        // ========================================
+
+        animator.SetTrigger(GameConst.ANIM_DEAD);
+
+
+        // ========================================
+        // DISABLE COLLIDER
+        // ========================================
+
+        if (capsuleCollider != null)
+        {
+            capsuleCollider.enabled = false;
+        }
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.isKinematic = true;
+
+
+        // ========================================
+        // STOP PLAYER CONTROLLER
+        // ========================================
+
+        enabled = false;
+
+
+        // Cho Animator chuyển state
+        yield return null;
+
+
+        // ========================================
+        // WAIT DEATH ANIMATION END
+        // ========================================
+
+        while (true)
+        {
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+
+
+            if (state.IsTag( GameConst.ANIM_TAG_DEAD ) && state.normalizedTime >= 1f)
+            {
+                break;
+            }
+
+
+            yield return null;
+        }
+
+
+        Debug.Log("PLAYER DEATH ANIMATION FINISHED");
+
+
+        // ========================================
+        // GAME OVER
+        // ========================================
+
+        GameManager.Instance.GameOver();
     }
 
 
-    // private IEnumerator DeadRoutine()
-    // {
-    //     animator.SetFloat("Speed", 0f);
-
-    //     animator.SetTrigger("Die");
-
-    //     if (capsuleCollider != null)
-    //         capsuleCollider.enabled = false;
-
-    //     // Dừng AI
-    //     enabled = false;
-
-    //     yield return null;
-
-    //     while (true)
-    //     {
-    //         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-
-    //         if (state.IsName("Dying") && state.normalizedTime >= 1f)
-    //         {
-    //             break;
-    //         }
-
-    //         yield return null;
-    //     }
-
-      
-
-    // }
+    
 
 }

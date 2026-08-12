@@ -23,6 +23,19 @@ public class DamageText : MonoBehaviour, IPoolable
 
     private Coroutine playRoutine;
 
+    public Vector3 WorldPosition => currentPosition;
+
+    public Vector3 ScreenPosition
+    {
+        get
+        {
+            if (mainCamera == null)
+                return Vector3.zero;
+
+            return mainCamera.WorldToScreenPoint(currentPosition);
+        }
+    }
+
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();

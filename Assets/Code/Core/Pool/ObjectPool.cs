@@ -90,6 +90,8 @@ public class ObjectPool
 
         obj.SetActive(false);
 
+        obj.transform.SetParent(parent, false);// quan trọng
+
         pool.Enqueue(obj);
     }
 }

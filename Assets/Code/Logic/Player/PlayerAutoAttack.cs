@@ -15,6 +15,16 @@ public class PlayerAutoAttack : MonoBehaviour
 
     private void Update()
     {
+
+        if (playerController == null)
+            return;
+
+        if (playerController.IsDead)
+            return;
+
+        if (!GameStateHelper.IsPlaying())
+            return;
+
         attackTimer += Time.deltaTime;
 
         if (attackTimer < playerData.attackCooldown)

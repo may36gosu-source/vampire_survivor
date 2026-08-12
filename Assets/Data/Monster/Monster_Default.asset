@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Slime
   prefab: {fileID: 4787734284849576031, guid: b9067838994a4fa489d3d3ea62c8d2af, type: 3}
-  maxHP: 120
+  maxHP: 60
   expReward: 10
   moveSpeed: 2.5
   attack: 10
