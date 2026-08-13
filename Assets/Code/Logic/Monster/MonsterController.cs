@@ -866,26 +866,36 @@ public class MonsterController : Entity, IPoolable
         return groundCollider;
     }
 
+    // private float GetGroundY(Vector3 position)
+    // {
+    //     Collider ground = GetGroundCollider();
+
+    //     if (ground == null)
+    //         return position.y;
+
+    //     Vector3 rayOrigin = position + Vector3.up * groundRayHeight;
+
+    //     Ray ray = new Ray(rayOrigin, Vector3.down);
+
+    //     if (ground.Raycast(ray, out RaycastHit hit, groundRayDistance))
+    //     {
+    //         return hit.point.y;
+    //     }
+
+    //     // Không tìm thấy Ground
+    //     // giữ nguyên Y hiện tại.
+    //     return position.y;
+    // }
+
+
     private float GetGroundY(Vector3 position)
     {
-        Collider ground = GetGroundCollider();
-
-        if (ground == null)
+        if (GroundSystem.Instance == null)
             return position.y;
 
-        Vector3 rayOrigin = position + Vector3.up * groundRayHeight;
-
-        Ray ray = new Ray(rayOrigin, Vector3.down);
-
-        if (ground.Raycast(ray, out RaycastHit hit, groundRayDistance))
-        {
-            return hit.point.y;
-        }
-
-        // Không tìm thấy Ground
-        // giữ nguyên Y hiện tại.
-        return position.y;
+        return GroundSystem.Instance.GetGroundY(position);
     }
+
 
     private void SnapToGround()
     {
@@ -981,14 +991,9 @@ public class MonsterController : Entity, IPoolable
         // Cooldown bắt đầu ngay khi Monster ra đòn.
         attackTimer = monsterData.attackCooldown;
 
-        animator.SetFloat(
-            GameConst.ANIM_SPEED,
-            0f
-        );
+        animator.SetFloat(GameConst.ANIM_SPEED, 0f);
 
-        animator.SetTrigger(
-            GameConst.ANIM_ATTACK
-        );
+        animator.SetTrigger(GameConst.ANIM_ATTACK);
 
 
         // ========================================
@@ -1013,8 +1018,7 @@ public class MonsterController : Entity, IPoolable
 
 
 
-            AnimatorStateInfo state =
-                animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
 
             if (state.IsTag(
@@ -1048,12 +1052,10 @@ public class MonsterController : Entity, IPoolable
                 yield break;
 
 
-            AnimatorStateInfo state =
-                animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
 
-            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) &&
-                state.normalizedTime >= monsterData.attackHitTime)
+            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) && state.normalizedTime >= monsterData.attackHitTime)
             {
                 PerformAttack();
 
@@ -1078,12 +1080,10 @@ public class MonsterController : Entity, IPoolable
                 yield break;
 
 
-            AnimatorStateInfo state =
-                animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
 
-            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) &&
-                state.normalizedTime >= 1f)
+            if (state.IsTag(GameConst.ANIM_TAG_ATTACK) && state.normalizedTime >= 1f)
             {
                 break;
             }

@@ -185,47 +185,63 @@ public class MonsterSpawner : MonoBehaviour
         controller.SetPool(expPool);
     }
 
+    // private Vector3 GetExpGroundPosition(Vector3 position, SphereCollider sphereCollider)
+    // {
+    //     GameObject ground = GameObject.Find("Ground");
+
+    //     if (ground == null)
+    //     {
+    //         Debug.LogError("MonsterSpawner: Không tìm thấy GameObject 'Ground'.");
+
+    //         return position;
+    //     }
+
+    //     Collider groundCollider =
+    //         ground.GetComponent<Collider>();
+
+    //     if (groundCollider == null)
+    //     {
+    //         groundCollider = ground.GetComponentInChildren<Collider>();
+    //     }
+
+    //     if (groundCollider == null)
+    //     {
+    //         Debug.LogError( "MonsterSpawner: Ground không có Collider."   );
+
+    //         return position;
+    //     }
+
+    //     Vector3 rayOrigin = position + Vector3.up * 2f;
+
+    //     Ray ray = new Ray(rayOrigin, Vector3.down);
+
+    //     if (groundCollider.Raycast( ray, out RaycastHit hit, 5f))
+    //     {
+    //         position.y = hit.point.y;
+
+    //         // SphereCollider có tâm ở giữa Orb.
+    //         // Đưa tâm lên đúng bán kính để Orb
+    //         // nằm trên mặt đất.
+    //         if (sphereCollider != null)
+    //         {
+    //             position.y += sphereCollider.bounds.extents.y;
+    //         }
+    //     }
+
+    //     return position;
+    // }
+
     private Vector3 GetExpGroundPosition(Vector3 position, SphereCollider sphereCollider)
     {
-        GameObject ground = GameObject.Find("Ground");
-
-        if (ground == null)
-        {
-            Debug.LogError("MonsterSpawner: Không tìm thấy GameObject 'Ground'.");
-
+        if (GroundSystem.Instance == null)
             return position;
-        }
 
-        Collider groundCollider =
-            ground.GetComponent<Collider>();
-
-        if (groundCollider == null)
-        {
-            groundCollider = ground.GetComponentInChildren<Collider>();
-        }
-
-        if (groundCollider == null)
-        {
-            Debug.LogError( "MonsterSpawner: Ground không có Collider."   );
-
-            return position;
-        }
-
-        Vector3 rayOrigin = position + Vector3.up * 2f;
-
-        Ray ray = new Ray(rayOrigin, Vector3.down);
-
-        if (groundCollider.Raycast( ray, out RaycastHit hit, 5f))
+        if (GroundSystem.Instance.RaycastGround(position, out RaycastHit hit))
         {
             position.y = hit.point.y;
 
-            // SphereCollider có tâm ở giữa Orb.
-            // Đưa tâm lên đúng bán kính để Orb
-            // nằm trên mặt đất.
             if (sphereCollider != null)
-            {
                 position.y += sphereCollider.bounds.extents.y;
-            }
         }
 
         return position;

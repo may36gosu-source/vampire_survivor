@@ -553,6 +553,37 @@ Transform:
   - {fileID: 1201238153}
   m_Father: {fileID: 387900207}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &264288152
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 264288153}
+  m_Layer: 0
+  m_Name: GroundChunks
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &264288153
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264288152}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1201238153}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &267995690 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1982683024585808344, guid: 69d4ce97a93cc1140ba07cb908c1afa0, type: 3}
@@ -1019,6 +1050,56 @@ Transform:
   - {fileID: 1834465995}
   m_Father: {fileID: 387900207}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &522032487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 522032488}
+  - component: {fileID: 522032489}
+  m_Layer: 0
+  m_Name: GroundSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &522032488
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 522032487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1912665449}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &522032489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 522032487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6569bc81c46fe454aaea5c12b08f344a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  rayHeight: 10
+  rayDistance: 30
+  testTarget: {fileID: 994680562}
 --- !u!1 &620154424
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,7 +1283,7 @@ GameObject:
   - component: {fileID: 735596327}
   - component: {fileID: 735596326}
   - component: {fileID: 735596325}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1294,8 +1375,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 50, y: 10, z: 50}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 50, y: 1, z: 50}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 157651490}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2287,6 +2368,7 @@ Transform:
   m_Children:
   - {fileID: 340972538}
   - {fileID: 1801319711}
+  - {fileID: 264288153}
   m_Father: {fileID: 157651490}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1201929572
@@ -2770,11 +2852,28 @@ MonoBehaviour:
   poolRoot: {fileID: 340972538}
   chunkPrefab: {fileID: 8197055716542853296, guid: b0b79b4aa1c671649a1c1576be68a87b, type: 3}
   chunkSize: 20
-  grassPrefab: {fileID: 7209548831361525222, guid: 19b2d70f331002e42a1956fbabbe08ae, type: 3}
-  flowerPrefab: {fileID: 6356617156682148225, guid: f9df9001fbc58ae43aca1ee9094e22a7, type: 3}
-  flower02Prefab: {fileID: 1039789640736376093, guid: fa2db5861ca124d439ef33b7c56a412e, type: 3}
-  flower03Prefab: {fileID: 4893475481679535526, guid: abc2c9049cd80734fb468ab19e4123c3, type: 3}
-  flower04Prefab: {fileID: 1101010000863559818, guid: 6f9fcb8af509d9f4eb9b31b1ca8ca208, type: 3}
+  decorations:
+  - prefab: {fileID: 7209548831361525222, guid: 19b2d70f331002e42a1956fbabbe08ae, type: 3}
+    weight: 45
+    preloadCount: 33
+  - prefab: {fileID: 1039789640736376093, guid: fa2db5861ca124d439ef33b7c56a412e, type: 3}
+    weight: 10
+    preloadCount: 33
+  - prefab: {fileID: 4893475481679535526, guid: abc2c9049cd80734fb468ab19e4123c3, type: 3}
+    weight: 15
+    preloadCount: 33
+  - prefab: {fileID: 6356617156682148225, guid: f9df9001fbc58ae43aca1ee9094e22a7, type: 3}
+    weight: 5
+    preloadCount: 33
+  - prefab: {fileID: 1101010000863559818, guid: 6f9fcb8af509d9f4eb9b31b1ca8ca208, type: 3}
+    weight: 10
+    preloadCount: 33
+  - prefab: {fileID: 448638602475988362, guid: e8f66809e999b2a44b58d1bfc31cf06f, type: 3}
+    weight: 10
+    preloadCount: 33
+  - prefab: {fileID: 5368200711165287784, guid: 0230c7c11ab97124dbf9196fdfa17421, type: 3}
+    weight: 10
+    preloadCount: 33
   decorationCount: 25
 --- !u!1001 &1521928208
 PrefabInstance:
@@ -3140,7 +3239,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1801319711}
   m_Layer: 0
-  m_Name: Chunks
+  m_Name: DecorationChunks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3258,6 +3357,7 @@ Transform:
   - {fileID: 925602949}
   - {fileID: 149598522}
   - {fileID: 1460994514}
+  - {fileID: 522032488}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1966389304

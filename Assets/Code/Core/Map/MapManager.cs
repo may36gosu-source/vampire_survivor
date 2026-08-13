@@ -13,47 +13,133 @@ public class MapManager : MonoBehaviour
     [SerializeField] private float chunkSize = 20f;
 
     [Header("Decoration")]
-    [SerializeField] private GameObject grassPrefab;
-    [SerializeField] private GameObject flowerPrefab;
-    [SerializeField] private GameObject flower02Prefab;
-    [SerializeField] private GameObject flower03Prefab;
-    [SerializeField] private GameObject flower04Prefab;
-
-    [SerializeField] private int decorationCount = 25;
+    [SerializeField] private List<DecorationConfig> decorations = new();
+    [SerializeField, Min(0)] private int decorationCount = 25;
 
     private ObjectPool chunkPool;
-    private readonly List<ObjectPool> decorationPools = new();
-
+    private readonly List<DecorationPool> decorationPools = new();
     private readonly Dictionary<Vector2Int, MapChunk> activeChunks = new();
+
+    private Vector2Int currentPlayerChunk; // 
+    private const int ChunkDistance = 2; // 1 chunk mỗi hướng 3 × 3
 
     private void Awake()
     {
-        chunkPool = new ObjectPool(chunkPrefab, 9, chunkRoot);
+        chunkPool = new ObjectPool(chunkPrefab, 27, chunkRoot);
 
-        decorationPools.Add(new ObjectPool(grassPrefab, 30, poolRoot));
-        decorationPools.Add(new ObjectPool(flowerPrefab, 10, poolRoot));
-        decorationPools.Add(new ObjectPool(flower02Prefab, 10, poolRoot));
-        decorationPools.Add(new ObjectPool(flower03Prefab, 10, poolRoot));
-        decorationPools.Add(new ObjectPool(flower04Prefab, 10, poolRoot));
+        foreach (DecorationConfig config in decorations)
+        {
+            if (config.Prefab == null)
+                continue;
+
+            ObjectPool pool = new ObjectPool(
+                config.Prefab, config.PreloadCount, poolRoot
+            );
+
+            decorationPools.Add(
+                new DecorationPool(pool, config.Weight)
+            );
+        }
     }
 
     private void Start()
     {
-        // SpawnTestChunk();
-
         LoadInitialChunks();
+
+        currentPlayerChunk = GetPlayerChunk();
+
+        // DebugRequiredChunks();
     }
 
     private void LoadInitialChunks()
     {
-        for (int x = -1; x <= 1; x++)
+        // for (int x = -1; x <= 1; x++)
+        // {
+        //     for (int z = -1; z <= 1; z++)
+        //     {
+        //         SpawnChunk(new Vector2Int(x, z));
+        //     }
+        // }
+        currentPlayerChunk = GetPlayerChunk();
+
+        HashSet<Vector2Int> requiredChunks = GetRequiredChunks(currentPlayerChunk);
+
+        SpawnMissingChunks(requiredChunks);
+    }
+
+    private void Update()
+    {
+        UpdateChunks();
+    }
+
+    // 9 chunk
+    private HashSet<Vector2Int> GetRequiredChunks(Vector2Int playerChunk)
+    {
+        HashSet<Vector2Int> requiredChunks  = new();
+
+        for (int x = -ChunkDistance; x <= ChunkDistance; x++)
         {
-            for (int z = -1; z <= 1; z++)
+            for (int z = -ChunkDistance; z <= ChunkDistance; z++)
             {
-                SpawnChunk(new Vector2Int(x, z));
+                requiredChunks .Add(
+                    new Vector2Int(playerChunk.x + x,playerChunk.y + z)
+                );
             }
         }
+
+        return requiredChunks;
     }
+
+    private void UpdateChunks()
+    {
+        Vector2Int playerChunk = GetPlayerChunk();
+
+        if (playerChunk == currentPlayerChunk)
+            return;
+
+        currentPlayerChunk = playerChunk;
+
+        HashSet<Vector2Int> requiredChunks = GetRequiredChunks(playerChunk);
+
+        SpawnMissingChunks(requiredChunks);
+
+        ReleaseUnusedChunks(requiredChunks);
+    }
+
+
+    private void SpawnMissingChunks(HashSet<Vector2Int> requiredChunks)
+    {
+        foreach (Vector2Int coordinate in requiredChunks)
+        {
+            if (activeChunks.ContainsKey(coordinate))
+                continue;
+
+            SpawnChunk(coordinate);
+        }
+    }
+
+    private void ReleaseUnusedChunks(HashSet<Vector2Int> requiredChunks)
+    {
+        List<Vector2Int> unused = new();
+
+        foreach (Vector2Int coordinate in activeChunks.Keys)
+        {
+            if (!requiredChunks.Contains(coordinate))
+                unused.Add(coordinate);
+        }
+
+        foreach (Vector2Int coordinate in unused)
+        {
+            MapChunk chunk = activeChunks[coordinate];
+
+            activeChunks.Remove(coordinate);
+
+            chunkPool.Release(chunk.gameObject);
+        }
+    }
+
+
+    
 
     private void SpawnChunk(Vector2Int coordinate)
     {
@@ -70,36 +156,40 @@ public class MapManager : MonoBehaviour
             return;
         }
 
-        chunk.Setup(
-            coordinate,
-            decorationPools,
-            decorationCount,
-            chunkSize
-        );
+        chunk.Setup(coordinate, decorationPools, decorationCount, chunkSize);
 
         activeChunks.Add(coordinate, chunk);
     }
 
-    private void SpawnTestChunk()
+
+    private void DebugRequiredChunks()
     {
-        GameObject obj = chunkPool.Get();
+        HashSet<Vector2Int> requiredChunks  =
+            GetRequiredChunks(currentPlayerChunk);
 
-        if (obj == null)
-            return;
+        Debug.Log(
+            $"Player Chunk: {currentPlayerChunk}"
+        );
 
-        MapChunk chunk = obj.GetComponent<MapChunk>();
-
-        if (chunk == null)
+        foreach (Vector2Int coordinate in requiredChunks )
         {
-            chunkPool.Release(obj);
-            return;
+            Debug.Log(
+                $"Required Chunk: {coordinate}"
+            );
         }
+    }
 
-        chunk.Setup(
-            Vector2Int.zero,
-            decorationPools,
-            decorationCount,
-            chunkSize
+
+    private Vector2Int GetPlayerChunk()
+    {
+        if (player == null)
+            return Vector2Int.zero;
+
+        return new Vector2Int(
+            Mathf.FloorToInt((player.position.x + chunkSize * 0.5f) / chunkSize),
+            Mathf.FloorToInt((player.position.z + chunkSize * 0.5f) / chunkSize)
         );
     }
+
+    
 }
