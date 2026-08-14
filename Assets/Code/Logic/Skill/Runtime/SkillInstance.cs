@@ -4,8 +4,7 @@ public class SkillInstance
 {
     public SkillData Definition { get; }
 
-    public int SkillId =>
-        Definition.SkillId;
+    public int SkillId => Definition.SkillId;
 
     public int Serial { get; }
 
@@ -17,14 +16,23 @@ public class SkillInstance
 
     public SkillState State { get; private set; }
 
-    public bool IsFinished =>
-        State == SkillState.Finished;
+    public bool IsFinished => State == SkillState.Finished;
 
-    public SkillInstance(
-        SkillData definition,
-        int serial,
-        Transform owner,
-        Transform target)
+    public bool AttackStarted { get; private set; }
+
+    public Vector3 TargetPosition
+    {
+        get
+        {
+            if (Target == null)
+                return Owner.position;
+
+            return Target.position;
+        }
+    }
+
+
+    public SkillInstance(SkillData definition, int serial, Transform owner, Transform target)
     {
         Definition = definition;
 
@@ -37,23 +45,28 @@ public class SkillInstance
         ElapsedTime = 0f;
 
         State = SkillState.Running;
+
+        AttackStarted = false;
+    }
+
+    public void MarkAttackStarted()
+    {
+        AttackStarted = true;
     }
 
     public void Update(float deltaTime)
     {
         if (IsFinished)
-            return;
+        return;
 
         ElapsedTime += deltaTime;
-
-        if (ElapsedTime >= Definition.Duration)
-        {
-            Finish();
-        }
     }
 
-    private void Finish()
+    public void Finish()
     {
+        if (IsFinished)
+            return;
+
         State = SkillState.Finished;
     }
 }

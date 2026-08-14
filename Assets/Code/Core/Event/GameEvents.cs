@@ -96,4 +96,14 @@ public static class GameEvents
     {
         OnGameOver?.Invoke();
     }
+
+    // ------------------------
+    // Xoay player mượt khi cast skill
+    // ------------------------
+    public static event Action<Transform> OnSkillFaceTarget;
+
+    public static void SkillFaceTarget(Transform target)
+    {
+        OnSkillFaceTarget?.Invoke(target);
+    }
 }

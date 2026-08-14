@@ -10,11 +10,7 @@ public class HitResult
 
     public bool IsDead { get; }
 
-    public HitResult(
-        MonsterController target,
-        int damage,
-        Vector3 hitPoint,
-        bool isDead)
+    public HitResult(MonsterController target, int damage, Vector3 hitPoint, bool isDead)
     {
         Target = target;
 

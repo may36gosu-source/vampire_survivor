@@ -39,11 +39,11 @@ public class PlayerAutoAttack : MonoBehaviour
 
         // target.TakeDamage(playerData.attack);
 
-        target.TakeDamage(playerController.CurrentAttack);
+        // target.TakeDamage(playerController.CurrentAttack);
 
-        Debug.Log($"Attack Monster - Damage: {playerController.CurrentAttack}");
+        // Debug.Log($"Attack Monster - Damage: {playerController.CurrentAttack}");
 
-        Debug.Log("Attack Monster");
+        // Debug.Log("Attack Monster");
     }
 
     private MonsterController FindNearestMonster()

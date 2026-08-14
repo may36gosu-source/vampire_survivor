@@ -187,6 +187,13 @@ public class PlayerController : Entity
 
     private CapsuleCollider capsuleCollider;
 
+    [SerializeField]
+    private float rotationSpeed = 360f;
+
+    private Transform skillRotationTarget;
+
+    private bool skillRotationActive;
+
     private void Awake()
     {
         base.Awake();
@@ -206,9 +213,12 @@ public class PlayerController : Entity
         GameEvents.OnExpCollected += AddExp;
         GameEvents.OnLevelUp += LevelUp;
 
+
         MaxHP = playerData.maxHP;
         currentHP = MaxHP;
     }
+
+
 
     private void Start()
     {
@@ -280,13 +290,89 @@ public class PlayerController : Entity
         animator.SetFloat("Speed", moveDirection.magnitude);
     }
 
+    // private void UpdateRotation()
+    // {
+    //     if (moveDirection.sqrMagnitude <= 0.01f)
+    //         return;
+
+    //     transform.rotation = Quaternion.LookRotation(moveDirection);
+    // }
+
+    // ---------------------------------------------------------------
+    // chỉnh sửa xoay player cho mượt
+    // ---------------------------------------------------------------
+
     private void UpdateRotation()
     {
-        if (moveDirection.sqrMagnitude <= 0.01f)
+        Vector3 targetDirection;
+
+        if (skillRotationActive)
+        {
+            if (skillRotationTarget == null)
+            {
+                skillRotationActive = false;
+                return;
+            }
+
+            targetDirection = skillRotationTarget.position - transform.position;
+
+            targetDirection.y = 0f;
+        }
+        else
+        {
+            targetDirection = moveDirection;
+        }
+
+        if (targetDirection.sqrMagnitude <= 0.001f)
             return;
 
-        transform.rotation = Quaternion.LookRotation(moveDirection);
+        Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
+
+    // Hàm này thông báo cho Skill Manager đã quay đủ
+    public bool IsFacingTarget(Transform target)
+    {
+        if (target == null)
+            return false;
+
+        Vector3 direction =
+            target.position - transform.position;
+
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude <= 0.001f)
+            return true;
+
+        float angle = Vector3.Angle(
+            transform.forward,
+            direction.normalized
+        );
+
+        return angle <= 5f;
+    }
+
+    public void StopSkillRotation()
+    {
+        skillRotationTarget = null;
+        skillRotationActive = false;
+    }
+
+    // Hàm xử lý dữ liệu xoay
+    private void HandleSkillFaceTarget(Transform target)
+    {
+        if (target == null)
+            return;
+
+        skillRotationTarget = target;
+        skillRotationActive = true;
+    }
+
+    // ---------------------------------------------------------------
+    // chỉnh sửa xoay player cho mượt
+    // ---------------------------------------------------------------
+
 
     private void AddExp(int exp)
     {
@@ -315,15 +401,27 @@ public class PlayerController : Entity
 
     private void LevelUp(int level)
     {
-        // Debug.Log( $"LEVEL UP======================== : {level}");
+        
     }
 
+    
+    private void OnEnable()
+    {
+        GameEvents.OnSkillFaceTarget += HandleSkillFaceTarget;
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnSkillFaceTarget -= HandleSkillFaceTarget;
+    }
+   
     private void OnDestroy()
     {
         LocalPlayer.Unregister(this);
 
         GameEvents.OnExpCollected -= AddExp;
         GameEvents.OnLevelUp -= LevelUp;
+
     }
 
     public void TakeDamage(int damage)

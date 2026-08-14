@@ -15,11 +15,8 @@ public class SkillData : ScriptableObject
     private float cooldown = 1f;
 
     [Header("Timeline")]
-    [SerializeField]
-    private float duration = 1f;
-
-    [SerializeField]
-    private float hitTime = 0.35f;
+    [SerializeField, Range(0f, 1f)]
+    private float hitNormalizedTime = 0.35f;
 
     [Header("Hit")]
     [SerializeField]
@@ -29,9 +26,7 @@ public class SkillData : ScriptableObject
 
     public float Cooldown => cooldown;
 
-    public float Duration => duration;
-
-    public float HitTime => hitTime;
+    public float HitNormalizedTime => hitNormalizedTime;
 
     public SkillHitDefinition Hit => hit;
 }
