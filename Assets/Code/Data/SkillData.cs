@@ -16,17 +16,28 @@ public class SkillData : ScriptableObject
 
     [Header("Timeline")]
     [SerializeField, Range(0f, 1f)]
+    private float vfxNormalizedTime = 0.20f;
+
+    [SerializeField, Range(0f, 1f)]
     private float hitNormalizedTime = 0.35f;
 
     [Header("Hit")]
     [SerializeField]
     private SkillHitDefinition hit;
 
+    [Header("VFX")]
+    [SerializeField]
+    private SkillVFXDefinition vfx;
+
     public int SkillId => skillId;
 
     public float Cooldown => cooldown;
 
+    public float VFXNormalizedTime => vfxNormalizedTime;
+
     public float HitNormalizedTime => hitNormalizedTime;
 
     public SkillHitDefinition Hit => hit;
+
+    public SkillVFXDefinition VFX => vfx;
 }

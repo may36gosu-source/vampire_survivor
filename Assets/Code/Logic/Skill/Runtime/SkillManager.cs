@@ -45,54 +45,73 @@ public class SkillManager : MonoBehaviour
 
     public bool UseSkill(Transform target)
     {
+        // ========================================
+        // SKILL DATA
+        // ========================================
+
         if (defaultSkill == null)
         {
-            Debug.LogWarning( "SkillManager: Chưa có SkillData.");
+            Debug.LogWarning(
+                "SkillManager: Chưa có SkillData."
+            );
+
+            GameEvents.SkillMessage(
+                "SKILL UNAVAILABLE"
+            );
 
             return false;
         }
 
-        if (cooldownTimer > 0f)
+        // ========================================
+        // TARGET
+        // ========================================
+
+        if (target == null)
+        {
+            GameEvents.SkillMessage(
+                "NO TARGET"
+            );
+
             return false;
+        }
+
+        // ========================================
+        // COOLDOWN
+        // ========================================
+
+        if (cooldownTimer > 0f)
+        {
+            GameEvents.SkillMessage(
+                $"SKILL COOLDOWN {cooldownTimer:F1}s"
+            );
+
+            return false;
+        }
+
+        // ========================================
+        // CASTING
+        // ========================================
 
         if (IsCasting)
+        {
+            GameEvents.SkillMessage(
+                "SKILL IS CASTING"
+            );
+
             return false;
+        }
 
         serialCounter++;
 
-        // currentSkill = new SkillInstance(defaultSkill, serialCounter, transform, target);
+        
 
-        // // FaceTarget(target); // Quay mặt player đối diện target
-
-        // timeline.Reset();
-
-        // animator.SetFloat(GameConst.ANIM_SPEED, 1f);
-
-        // animator.SetTrigger(GameConst.ANIM_ATTACK);
-
-        // cooldownTimer = defaultSkill.Cooldown;
-
-        // Debug.Log(
-        //     $"Skill Start | " +
-        //     $"ID={currentSkill.SkillId} | " +
-        //     $"Serial={currentSkill.Serial} | " +
-        //     $"Target={target.name}"
-        // );
-
-        currentSkill =
-            new SkillInstance(
-                defaultSkill,
-                serialCounter,
-                transform,
-                target
-            );
+        currentSkill = new SkillInstance( defaultSkill, serialCounter, transform, target);
 
         timeline.Reset();
 
         GameEvents.SkillFaceTarget(target);
 
-        cooldownTimer =
-            defaultSkill.Cooldown;
+        cooldownTimer = defaultSkill.Cooldown;
 
         Debug.Log(
             $"Skill Start | " +
@@ -132,18 +151,42 @@ public class SkillManager : MonoBehaviour
 
     private void OnGUI()
     {
-        if (GUI.Button(new Rect(20, 20, 160, 50), "TEST SKILL"))
+        
+        if (!GameStateHelper.IsPlaying())
+        {
+            return;
+        }
+
+        float width = 160f;
+        float height = 50f;
+
+        float right = 20f;
+        float bottom = 50f;
+
+        
+
+        Rect rect = new Rect(
+            Screen.width - width - right,
+            Screen.height - height - bottom,
+            width,
+            height
+        );
+
+        if (GUI.Button(rect, "TEST SKILL"))
         {
             Transform target = FindNearestMonster();
 
-            if (target == null)
-            {
-                Debug.Log( "SkillManager: Không tìm thấy Monster.");
-
-                return;
-            }
-
             UseSkill(target);
+
+            // if (target == null)
+            // {
+            //     GameEvents.SkillMessage(
+            //         "MONSTER ERROR "
+            //     );
+            //     return;
+            // }
+
+            
         }
     }
 
@@ -161,6 +204,8 @@ public class SkillManager : MonoBehaviour
 
             if (monster == null)
                 continue;
+            if (monster.IsDead)
+                continue;
 
             float distanceSqr = (monster.transform.position - transform.position).sqrMagnitude;
 
@@ -174,40 +219,7 @@ public class SkillManager : MonoBehaviour
         return nearest;
     }
 
-    // private void UpdateSkill()
-    // {
-    //     if (currentSkill == null)
-    //         return;
-
-    //     currentSkill.Update(
-    //         Time.deltaTime
-    //     );
-
-    //     if (timeline.TryTriggerHit(
-    //         currentSkill,
-    //         animator))
-    //     {
-    //         Debug.Log(
-    //             $"Skill HIT | " +
-    //             $"ID={currentSkill.SkillId} | " +
-    //             $"Serial={currentSkill.Serial} | " +
-    //             $"Target={currentSkill.Target.name}"
-    //         );
-    //     }
-
-    //     if (timeline.IsFinished(animator))
-    //     {
-    //         Debug.Log(
-    //             $"Skill Finish | " +
-    //             $"ID={currentSkill.SkillId} | " +
-    //             $"Serial={currentSkill.Serial}"
-    //         );
-
-    //         currentSkill.Finish();
-
-    //         currentSkill = null;
-    //     }
-    // }
+    
 
     private void UpdateSkill()
     {
@@ -243,14 +255,28 @@ public class SkillManager : MonoBehaviour
         // HIT
         // ========================================
 
-        if (timeline.TryTriggerHit(currentSkill,animator))
+        if (timeline.TryTriggerHit(currentSkill, animator))
         {
-            
+            MonsterController target =
+                currentSkill.Target.GetComponent<MonsterController>();
+
+            if (target != null)
+            {
+                target.TakeDamage(playerController.CurrentAttack);
+            }
+
             if (vfxController != null)
             {
                 vfxController.PlaySlash();
             }
-            Debug.Log( $"Skill HIT | " + $"ID={currentSkill.SkillId} | " + $"Serial={currentSkill.Serial} | " + $"Target={currentSkill.Target.name}");
+
+            Debug.Log(
+                $"Skill HIT | " +
+                $"ID={currentSkill.SkillId} | " +
+                $"Serial={currentSkill.Serial} | " +
+                $"Target={currentSkill.Target.name} | " +
+                $"Damage={playerController.CurrentAttack}"
+            );
         }
 
         // ========================================

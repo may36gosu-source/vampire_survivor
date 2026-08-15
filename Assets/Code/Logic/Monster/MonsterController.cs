@@ -707,26 +707,111 @@ public class MonsterController : Entity, IPoolable
     }
 
 
+    // private IEnumerator DeadRoutine()
+    // {
+    //     animator.SetFloat(GameConst.ANIM_SPEED, 0f);
+
+
+    //      Debug.Log(
+    //         $"Monster DEAD | " +
+    //         $"Name={name} | " +
+    //         $"Trigger={GameConst.ANIM_DEAD}"
+    //     );
+
+    //     animator.SetTrigger(GameConst.ANIM_DEAD);
+
+    //     if (capsuleCollider != null)
+    //         capsuleCollider.enabled = false;
+
+    //     // Dừng AI
+    //     enabled = false;
+
+    //     // Chờ Animator chuyển sang Death state.
+    //     yield return null;
+
+
+    //     AnimatorStateInfo state2 =
+    //     animator.GetCurrentAnimatorStateInfo(0);
+
+    // Debug.Log(
+    //     $"Monster Death State | " +
+    //     $"Name={name} | " +
+    //     $"State={state2.fullPathHash} | " +
+    //     $"Tag={state2.tagHash} | " +
+    //     $"Normalized={state2.normalizedTime:F2} | " +
+    //     $"IsDeadTag={state2.IsTag(GameConst.ANIM_TAG_DEAD)}"
+    // );
+
+    //     while (true)
+    //     {
+    //         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+
+    //         if (state.IsTag(GameConst.ANIM_TAG_DEAD) && state.normalizedTime >= 1f)
+    //         {
+    //             break;
+    //         }
+
+    //         yield return null;
+    //     }
+
+    //     OnDead?.Invoke(this);
+
+    // }
+
     private IEnumerator DeadRoutine()
     {
-        animator.SetFloat(GameConst.ANIM_SPEED, 0f);
+        animator.SetFloat(
+            GameConst.ANIM_SPEED,
+            0f
+        );
 
+        animator.ResetTrigger(GameConst.ANIM_ATTACK);
         animator.SetTrigger(GameConst.ANIM_DEAD);
 
         if (capsuleCollider != null)
             capsuleCollider.enabled = false;
 
-        // Dừng AI
+        // Cho Animator xử lý transition Dead
+        yield return null;
+
+        AnimatorStateInfo state =
+            animator.GetCurrentAnimatorStateInfo(0);
+
+        // ========================================
+        // FALLBACK
+        // ========================================
+
+        if (!state.IsTag(GameConst.ANIM_TAG_DEAD))
+        {
+            Debug.LogWarning(
+                $"Monster Death Animation chưa vào Dying | " +
+                $"Name={name} | " +
+                $"Force Dying."
+            );
+
+            animator.Play(
+                "Dying",
+                0,
+                0f
+            );
+
+            yield return null;
+        }
+
+        // Controller không cần Update nữa
         enabled = false;
 
-        // Chờ Animator chuyển sang Death state.
-        yield return null;
+        // ========================================
+        // WAIT DEATH ANIMATION
+        // ========================================
 
         while (true)
         {
-            AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+            state =
+                animator.GetCurrentAnimatorStateInfo(0);
 
-            if (state.IsTag(GameConst.ANIM_TAG_DEAD) && state.normalizedTime >= 1f)
+            if (state.IsTag(GameConst.ANIM_TAG_DEAD) &&
+                state.normalizedTime >= 1f)
             {
                 break;
             }
@@ -734,8 +819,11 @@ public class MonsterController : Entity, IPoolable
             yield return null;
         }
 
-        OnDead?.Invoke(this);
+        // ========================================
+        // DEATH COMPLETE
+        // ========================================
 
+        OnDead?.Invoke(this);
     }
 
 

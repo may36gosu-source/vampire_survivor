@@ -92,6 +92,8 @@ public class NotificationManager : MonoBehaviour
         GameEvents.OnExpCollected += HandleExpCollected;
 
         GameEvents.OnLevelUp += HandleLevelUp; // đăng ký sự kiện nhận level up
+
+        GameEvents.OnSkillMessage += HandleSkillMessage; // đăng ký sự kiện skill coundown
     }
 
     private void OnDisable()
@@ -99,6 +101,8 @@ public class NotificationManager : MonoBehaviour
         GameEvents.OnExpCollected -= HandleExpCollected;
 
         GameEvents.OnLevelUp -= HandleLevelUp; // đăng ký sự kiện nhận level up
+
+        GameEvents.OnSkillMessage -= HandleSkillMessage; // đăng ký sự kiện nhận level up
     }
 
     private void Start()
@@ -115,6 +119,11 @@ public class NotificationManager : MonoBehaviour
     private void HandleLevelUp(int level)
     {
         ShowCenter($"LEVEL UP! +{level}");
+    }
+
+    private void HandleSkillMessage(string message)
+    {
+        ShowCenter(message);
     }
 
     private void Update()

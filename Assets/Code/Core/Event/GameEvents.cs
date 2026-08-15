@@ -106,4 +106,16 @@ public static class GameEvents
     {
         OnSkillFaceTarget?.Invoke(target);
     }
+
+    
+    // ------------------------
+    // Skill Message
+    // ------------------------
+
+    public static event Action<string> OnSkillMessage;
+
+    public static void SkillMessage(string message)
+    {
+        OnSkillMessage?.Invoke(message);
+    }
 }
