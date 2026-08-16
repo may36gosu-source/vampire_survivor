@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9379f61a0fab31a42bdff36a4e0dae5b, type: 3}
+  m_Name: Skill_Default
+  m_EditorClassIdentifier: 
+  skillId: 1001
+  cooldown: 1
+  vfxNormalizedTime: 0.2
+  hitNormalizedTime: 0.35
+  hit:
+    mode: 0
+    radius: 2
+  vfx:
+    prefab: {fileID: 5545784914194635617, guid: 46bfdbfc0c293b741b13e195691e281d, type: 3}
+    attachToWeapon: 1
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 200, z: 0}
+  icon: {fileID: 21300000, guid: 8ff44fdb30622f54aa0f2119e856d1fc, type: 3}
